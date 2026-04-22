@@ -1,0 +1,28 @@
+{
+  "feature_order": [
+    "Age",
+    "Gender",
+    "Income",
+    "Education_Level",
+    "Marital_Status",
+    "Number_of_Children",
+    "Home_Ownership",
+    "Income_per_Dependent",
+    "Age_Income_Ratio"
+  ],
+  "numerical_features": [
+    "Age",
+    "Income",
+    "Number_of_Children",
+    "Income_per_Dependent",
+    "Age_Income_Ratio"
+  ],
+  "n_features": 9,
+  "target_classes": [
+    "Average",
+    "High",
+    "Low"
+  ],
+  "best_model_name": "GradientBoosting",
+  "best_f1_score": 1.0
+}

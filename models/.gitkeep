@@ -1,0 +1,6 @@
+# This directory stores trained model artifacts from Google Colab.
+# Place the following files here after training:
+#   - credit_model.pkl     (trained classifier)
+#   - scaler.pkl           (fitted StandardScaler)
+#   - target_encoder.pkl   (fitted LabelEncoder for target)
+#   - feature_config.json  (ordered feature names)
