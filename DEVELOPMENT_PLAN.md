@@ -1,8 +1,8 @@
-# 🏗️ DEVELOPMENT PLAN — Credit Scoring System
+#  DEVELOPMENT PLAN — Credit Scoring System
 > **Role:** Senior ML Solutions Architect  
 > **Workflow:** Hybrid (Colab Training ↔ Local Engineering)  
 > **Last Updated:** 2026-04-22  
-> **Status:** 🟢 Phase 2 — Modular Refactoring (COMPLETE)
+> **Status:**  Phase 2 — Modular Refactoring (COMPLETE)
 
 ---
 
@@ -23,23 +23,23 @@
 
 | Aspect | Current State | Severity |
 |---|---|---|
-| **Project Structure** | Flat — single script (`codealphp1.py`) + CSV + README | 🔴 Critical |
-| **Data Path** | Hardcoded absolute Windows path (`C:\Users\admin\...`) | 🔴 Critical |
-| **Data Format** | Code reads `.xlsx` but repo has `.csv` — mismatch | 🔴 Critical |
-| **Preprocessing** | All logic monolithically embedded in one script | 🟡 Major |
-| **Label Encoding** | Uses single `LabelEncoder` instance across all categorical columns — leaks class mappings | 🔴 Critical |
-| **Model Persistence** | No `joblib`/`pickle` export — model not saved | 🔴 Critical |
-| **Scaler Persistence** | `StandardScaler` not saved — can't reproduce inference-time transforms | 🔴 Critical |
-| **Feature Engineering** | Zero — raw features used directly | 🟡 Major |
-| **API Layer** | None | 🔴 Critical |
-| **UI/Dashboard** | None | 🔴 Critical |
-| **Docker** | None | 🟡 Major |
-| **Logging** | None — uses `print()` | 🟡 Major |
-| **Config Management** | None — hardcoded values | 🟡 Major |
-| **Tests** | None | 🟡 Major |
-| **README Quality** | Generic — no diagrams, no install instructions, no API docs | 🟡 Major |
-| **`.gitignore`** | Missing | 🟡 Major |
-| **`requirements.txt`** | Missing | 🔴 Critical |
+| **Project Structure** | Flat — single script (`codealphp1.py`) + CSV + README |  Critical |
+| **Data Path** | Hardcoded absolute Windows path (`C:\Users\admin\...`) |  Critical |
+| **Data Format** | Code reads `.xlsx` but repo has `.csv` — mismatch |  Critical |
+| **Preprocessing** | All logic monolithically embedded in one script |  Major |
+| **Label Encoding** | Uses single `LabelEncoder` instance across all categorical columns — leaks class mappings |  Critical |
+| **Model Persistence** | No `joblib`/`pickle` export — model not saved |  Critical |
+| **Scaler Persistence** | `StandardScaler` not saved — can't reproduce inference-time transforms |  Critical |
+| **Feature Engineering** | Zero — raw features used directly |  Major |
+| **API Layer** | None |  Critical |
+| **UI/Dashboard** | None | Critical |
+| **Docker** | None |  Major |
+| **Logging** | None — uses `print()` |  Major |
+| **Config Management** | None — hardcoded values | Major |
+| **Tests** | None |  Major |
+| **README Quality** | Generic — no diagrams, no install instructions, no API docs |  Major |
+| **`.gitignore`** | Missing |  Major |
+| **`requirements.txt`** | Missing |  Critical |
 
 ### Critical Bugs Found
 1. **LabelEncoder Misuse:** A single `LabelEncoder` instance is `fit_transform`'d on each categorical column sequentially. This means the encoder retains only the mapping of the *last* column processed. At inference time, all columns would decode incorrectly.
@@ -210,24 +210,24 @@ Credit-Scoring-Model/
 
 ```mermaid
 graph TB
-    subgraph "☁️ Google Colab (Your Domain)"
-        A["📊 Kaggle Dataset"] --> B["🔬 Feature Engineering"]
-        B --> C["🏋️ Model Training<br/>(RandomForest / XGBoost)"]
-        C --> D["📦 Export Artifacts<br/>model.pkl + scaler.pkl<br/>+ encoder.pkl + config.json"]
+    subgraph " Google Colab (Your Domain)"
+        A["Kaggle Dataset"] --> B[" Feature Engineering"]
+        B --> C[" Model Training<br/>(RandomForest / XGBoost)"]
+        C --> D[" Export Artifacts<br/>model.pkl + scaler.pkl<br/>+ encoder.pkl + config.json"]
     end
 
-    subgraph "💻 Local Machine (Antigravity)"
-        D --> |"Manual Transfer"| E["📂 models/ folder"]
-        E --> F["⚙️ src/predict.py<br/>Inference Engine"]
+    subgraph " Local Machine (Antigravity)"
+        D --> |"Manual Transfer"| E[" models/ folder"]
+        E --> F[" src/predict.py<br/>Inference Engine"]
 
-        F --> G["🚀 FastAPI<br/>api/main.py"]
-        G --> |"/predict"| H["📨 JSON Response<br/>{score, probability, risk}"]
+        F --> G[" FastAPI<br/>api/main.py"]
+        G --> |"/predict"| H[" JSON Response<br/>{score, probability, risk}"]
 
-        F --> I["📊 Streamlit Dashboard<br/>dashboard/app.py"]
-        I --> J["🎯 Gauge Chart<br/>+ Input Forms"]
+        F --> I[" Streamlit Dashboard<br/>dashboard/app.py"]
+        I --> J[" Gauge Chart<br/>+ Input Forms"]
     end
 
-    subgraph "🐳 Docker (Deployment)"
+    subgraph " Docker (Deployment)"
         G --> K["Dockerfile"]
         I --> K
     end
@@ -270,7 +270,7 @@ sequenceDiagram
 - [x] List missing industry-standard components
 - [x] Create `DEVELOPMENT_PLAN.md`
 
-### Phase 2: Modular Refactoring ✅
+### Phase 2: Modular Refactoring 
 - [x] Create target directory structure (`src/`, `api/`, `models/`, `dashboard/`, `data/`, `tests/`)
 - [x] Create `.gitignore` (Python, IDE, data files)
 - [x] Write `src/config.py` — central configuration
@@ -336,18 +336,3 @@ sequenceDiagram
 Colab → Google Drive → Download → Place in models/ folder → Restart API
 ```
 
----
-
-## 7. Progress Tracker
-
-| Phase | Status | Started | Completed |
-|---|---|---|---|
-| Phase 1: Initialization & Context | ✅ Complete | 2026-04-22 | 2026-04-22 |
-| Phase 2: Modular Refactoring | ✅ Complete | 2026-04-22 | 2026-04-22 |
-| Phase 3: Retraining Bridge | 🟡 Current | 2026-04-22 | — |
-| Phase 4: API & UI Development | ⏳ Pending | — | — |
-| Phase 5: Finalization & Documentation | ⏳ Pending | — | — |
-
----
-
-> **Next Action:** Awaiting your approval to proceed to **Phase 2: Modular Refactoring** — creating the directory structure and writing the `src/` module code.
