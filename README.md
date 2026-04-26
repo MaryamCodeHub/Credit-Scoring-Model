@@ -1,66 +1,357 @@
-# Credit-Scoring-Model
-Credit Scoring Model: Predicting Creditworthiness Using Machine Learning
+<p align="center">
+  <h1 align="center">🏦 Credit Scoring System</h1>
+  <p align="center">
+    <strong>Production-Grade ML Credit Score Prediction with FastAPI & Streamlit</strong>
+  </p>
+  <p align="center">
+    <img src="https://img.shields.io/badge/Python-3.12+-blue?logo=python&logoColor=white" alt="Python">
+    <img src="https://img.shields.io/badge/FastAPI-0.136+-009688?logo=fastapi&logoColor=white" alt="FastAPI">
+    <img src="https://img.shields.io/badge/Streamlit-1.56+-FF4B4B?logo=streamlit&logoColor=white" alt="Streamlit">
+    <img src="https://img.shields.io/badge/scikit--learn-1.6+-F7931E?logo=scikit-learn&logoColor=white" alt="scikit-learn">
+    <img src="https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker&logoColor=white" alt="Docker">
+    <img src="https://img.shields.io/badge/License-MIT-green" alt="License">
+  </p>
+</p>
 
-Project Overview:
-The Credit Scoring Model project involves building a machine learning model to predict the creditworthiness of individuals. The model evaluates various financial and personal attributes of individuals to determine whether they are likely to repay a loan or default. This kind of model is critical for financial institutions as it aids in automating the decision-making process for loan approvals, reducing risks, and optimizing the loan process.
+---
 
-In this project, I utilized classification algorithms to build the model, evaluated its performance using several metrics, and visualized the results to gain insights into the factors that influence creditworthiness.
+## 📋 Table of Contents
 
-Objective:
-The primary objective of this project is to predict whether a given individual is creditworthy (i.e., likely to repay a loan) based on their financial data and demographic information. The model outputs a binary classification: creditworthy or non-creditworthy.
+- [Overview](#-overview)
+- [System Architecture](#-system-architecture)
+- [Project Structure](#-project-structure)
+- [Features](#-features)
+- [Installation](#-installation)
+- [Usage](#-usage)
+- [API Documentation](#-api-documentation)
+- [Model Details](#-model-details)
+- [Testing](#-testing)
+- [Docker Deployment](#-docker-deployment)
+- [Tech Stack](#-tech-stack)
 
-Dataset:
-The dataset used in this project contains financial and personal data of individuals. Each data point includes features such as:
-Monthly Inhand Salary
-Outstanding Debt
-Amount Invested Monthly
-Loan Amount
-Number of Loans Taken
-Credit History
-Age
-Gender
-Marital Status
-Occupation
-Country
-The target variable in the dataset indicates whether the individual is creditworthy (represented as 1) or non-creditworthy (represented as 0).
+---
 
-Data Preprocessing:
-Before building the model, several preprocessing steps were performed to clean and prepare the data:
+## 🎯 Overview
 
-Handling Missing Values: Missing values were imputed using suitable techniques like mean or median for numerical columns and mode for categorical columns.
-Encoding Categorical Variables: Categorical features such as gender, marital status, and occupation were encoded using label encoding or one-hot encoding to transform them into a format suitable for machine learning algorithms.
-Feature Scaling: Since the dataset contained features with varying ranges (e.g., salary vs. debt), feature scaling was applied using standardization techniques to ensure that all features contributed equally to the model’s performance.
-Data Splitting: The dataset was split into training and testing sets in an 80-20 ratio. The training set was used to train the model, while the testing set was used to evaluate the model’s performance.
-Modeling
-To build the Credit Scoring Model, I explored various classification algorithms to find the best performing model:
+A **production-grade credit scoring system** that predicts an applicant's creditworthiness (Low / Average / High) based on demographic and financial data. Built with a **hybrid workflow** — model training on Google Colab, software engineering locally.
 
-Logistic Regression: As a simple and interpretable model, Logistic Regression was used as the baseline to understand how well basic linear models perform.
-Decision Tree Classifier: Decision trees were employed to capture non-linear relationships between the features and the target.
-Random Forest Classifier: An ensemble model, Random Forest, was used to improve performance by aggregating the results of multiple decision trees.
-Gradient Boosting Classifier: A boosting technique was used to further improve accuracy by focusing on correcting the mistakes made by previous models.
-Support Vector Machine (SVM): SVM was tested to separate the data points into different classes based on the margin maximization principle.
-Model Evaluation
-Several evaluation metrics were used to assess the performance of the models:
+The system features:
+- **Machine Learning Pipeline** — Feature engineering, SMOTE class balancing, GradientBoosting classifier
+- **REST API** — FastAPI with Pydantic validation, auto-generated Swagger/ReDoc docs
+- **Interactive Dashboard** — Streamlit UI with real-time gauge charts and risk assessment
+- **Docker-Ready** — One-command deployment with docker-compose
 
-Accuracy: The percentage of correct predictions made by the model.
-Precision: The percentage of true positive predictions among all positive predictions made.
-Recall: The percentage of true positive predictions out of all actual positive cases.
-F1 Score: The harmonic mean of precision and recall, providing a balance between the two.
-Confusion Matrix: A heatmap was used to visualize true positives, true negatives, false positives, and false negatives.
-Visualizations
-Various visualizations were created to gain insights into the data and model performance:
+---
 
-Feature Importance: A bar plot showing which features contributed most to the prediction of creditworthiness.
-Scatter Plot: A scatter plot visualizing the relationship between Monthly Inhand Salary and Outstanding Debt.
-Histogram with KDE: A histogram with Kernel Density Estimation (KDE) showing the distribution of the feature Amount Invested Monthly.
-Confusion Matrix Heatmap: A heatmap visualizing the model’s performance in terms of true positives, true negatives, and misclassifications.
-Results and Findings
-The Random Forest Classifier and Gradient Boosting Classifier yielded the highest performance in terms of accuracy and F1 score, outperforming the baseline logistic regression model. The following were key findings:
+## 🏗️ System Architecture
 
-Outstanding Debt and Monthly Inhand Salary were the most important features in predicting whether an individual is creditworthy.
-Individuals with higher Amount Invested Monthly had a greater likelihood of being classified as creditworthy.
-The model achieved an accuracy of X% on the test dataset (you can update this based on your results).
-Conclusion
-The Credit Scoring Model provides a reliable way to predict creditworthiness, helping financial institutions make better decisions regarding loan approvals. By using machine learning algorithms, we can automate and improve the accuracy of credit scoring systems, reducing risks associated with lending.
+```mermaid
+graph TB
+    subgraph "Cloud — Google Colab"
+        A["📊 Kaggle Dataset"] --> B["🔬 Feature Engineering<br/>Income_per_Dependent<br/>Age_Income_Ratio"]
+        B --> C["🏋️ Model Training<br/>GradientBoosting + SMOTE"]
+        C --> D["📦 Export Artifacts<br/>model.pkl / scaler.pkl<br/>encoder.pkl / config.json"]
+    end
 
-This project has been an excellent learning opportunity, allowing me to apply machine learning techniques to a real-world financial problem. With further tuning and optimization, the model could be deployed in production environments to assist in credit scoring.
+    subgraph "Local — Production Stack"
+        D -->|"Manual Transfer"| E["📂 models/"]
+        E --> F["⚙️ Preprocessing Pipeline<br/>src/preprocessing.py"]
+
+        F --> G["🚀 FastAPI Server<br/>api/main.py"]
+        G -->|"POST /api/v1/predict"| H["📨 JSON Response"]
+
+        F --> I["📊 Streamlit Dashboard<br/>dashboard/app.py"]
+        I --> J["🎯 Gauge Chart + Risk Badge"]
+    end
+
+    subgraph "Deployment"
+        G --> K["🐳 Docker Container"]
+        I --> K
+    end
+
+    style A fill:#4DB6AC,stroke:#00897B,color:#fff
+    style C fill:#4DB6AC,stroke:#00897B,color:#fff
+    style G fill:#26A69A,stroke:#00897B,color:#fff
+    style I fill:#80CBC4,stroke:#4DB6AC,color:#000
+    style K fill:#B2DFDB,stroke:#80CBC4,color:#000
+```
+
+### Request Flow
+
+```mermaid
+sequenceDiagram
+    participant U as User / Dashboard
+    participant A as FastAPI /predict
+    participant P as Preprocessor
+    participant M as ML Model
+
+    U->>A: POST {age, gender, income, ...}
+    A->>A: Pydantic Validation
+    A->>P: preprocess(input_data)
+    P->>P: Engineer → Encode → Reorder → Scale
+    P-->>A: feature_vector
+    A->>M: model.predict(features)
+    M-->>A: prediction + probabilities
+    A-->>U: {credit_score, confidence, risk_level}
+```
+
+---
+
+## 📁 Project Structure
+
+```
+Credit-Scoring-Model/
+├── src/                          # Core ML Logic
+│   ├── config.py                 # Central configuration & constants
+│   ├── logger.py                 # Structured logging (loguru)
+│   ├── preprocessing.py          # Feature engineering & encoding pipeline
+│   └── predict.py                # Inference engine (CreditScorer class)
+├── api/                          # REST API
+│   ├── main.py                   # FastAPI app with CORS & docs
+│   ├── routes.py                 # /predict & /health endpoints
+│   └── schemas.py                # Pydantic request/response models
+├── dashboard/                    # Interactive UI
+│   └── app.py                    # Streamlit dashboard with gauge charts
+├── models/                       # ML Artifacts (from Colab)
+│   ├── credit_model.pkl          # Trained GradientBoosting classifier
+│   ├── scaler.pkl                # Fitted StandardScaler
+│   ├── target_encoder.pkl        # Fitted LabelEncoder
+│   └── feature_config.json       # Feature names & metadata
+├── data/                         # Dataset
+│   └── Credit_Score_...csv       # Kaggle classification dataset
+├── notebooks/                    # Training Reference
+│   └── colab_training.py         # Google Colab training script
+├── tests/                        # Test Suite
+│   ├── test_preprocessing.py     # 12 preprocessing pipeline tests
+│   └── test_api.py               # 8 API endpoint tests
+├── Dockerfile                    # Production container
+├── docker-compose.yml            # Multi-service orchestration
+├── requirements.txt              # Python dependencies
+├── DEVELOPMENT_PLAN.md           # Development roadmap & progress
+└── README.md                     # This file
+```
+
+---
+
+## ✨ Features
+
+| Feature | Description |
+|---------|-------------|
+| **3-Class Prediction** | Classifies credit score as **Low**, **Average**, or **High** |
+| **Confidence Scores** | Returns probability breakdown for each class |
+| **Risk Assessment** | Automatic risk level mapping (High/Medium/Low Risk) |
+| **Input Validation** | Pydantic enums enforce valid Gender, Education, etc. |
+| **Gauge Visualization** | Real-time Plotly gauge chart in Streamlit dashboard |
+| **Structured Logging** | loguru with colored console + auto-rotated file logs |
+| **Health Checks** | `/health` endpoint for monitoring & Docker health checks |
+| **CORS Enabled** | Cross-origin requests supported for frontend integrations |
+| **Docker Ready** | Single-command deployment with docker-compose |
+
+---
+
+## 🚀 Installation
+
+### Prerequisites
+- Python 3.12+ 
+- pip
+
+### Local Setup
+
+```bash
+# Clone the repository
+git clone https://github.com/MaryamCodeHub/Credit-Scoring-Model.git
+cd Credit-Scoring-Model
+
+# Install dependencies
+pip install -r requirements.txt
+```
+
+---
+
+## 💻 Usage
+
+### Start the FastAPI Server
+
+```bash
+uvicorn api.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+The API will be available at:
+- **Swagger Docs:** http://localhost:8000/docs
+- **ReDoc:** http://localhost:8000/redoc
+- **Health Check:** http://localhost:8000/api/v1/health
+
+### Start the Streamlit Dashboard
+
+```bash
+streamlit run dashboard/app.py
+```
+
+The dashboard will open at http://localhost:8501
+
+---
+
+## 📡 API Documentation
+
+### POST `/api/v1/predict`
+
+Predict the credit score for a loan applicant.
+
+**Request Body:**
+```json
+{
+  "Age": 30,
+  "Gender": "Male",
+  "Income": 75000,
+  "Education": "Bachelor's Degree",
+  "Marital Status": "Single",
+  "Number of Children": 0,
+  "Home Ownership": "Rented"
+}
+```
+
+**Response:**
+```json
+{
+  "credit_score": "High",
+  "confidence": 0.87,
+  "probabilities": {
+    "Low": 0.05,
+    "Average": 0.08,
+    "High": 0.87
+  },
+  "risk_level": "Low Risk"
+}
+```
+
+### GET `/api/v1/health`
+
+```json
+{
+  "status": "healthy",
+  "model_loaded": true,
+  "version": "1.0.0"
+}
+```
+
+### Input Constraints
+
+| Field | Type | Constraints |
+|-------|------|-------------|
+| `Age` | int | 18–100 |
+| `Gender` | enum | Male, Female |
+| `Income` | float | > 0 |
+| `Education` | enum | High School Diploma, Associate's Degree, Bachelor's Degree, Master's Degree, Doctorate |
+| `Marital Status` | enum | Single, Married |
+| `Number of Children` | int | 0–15 |
+| `Home Ownership` | enum | Rented, Owned |
+
+---
+
+## 🤖 Model Details
+
+| Attribute | Value |
+|-----------|-------|
+| **Algorithm** | GradientBoosting Classifier |
+| **F1 Score** | 1.00 (weighted) |
+| **Target Classes** | Low, Average, High |
+| **Features** | 9 (7 raw + 2 engineered) |
+| **Class Balancing** | SMOTE oversampling |
+| **Hyperparameter Tuning** | GridSearchCV with StratifiedKFold |
+| **Training Environment** | Google Colab |
+
+### Preprocessing Pipeline
+
+```mermaid
+graph LR
+    A["Raw Input<br/>7 features"] --> B["Feature Engineering<br/>+Income_per_Dependent<br/>+Age_Income_Ratio"]
+    B --> C["Categorical Encoding<br/>Ordinal: Education<br/>Binary: Gender, Marital, Home"]
+    C --> D["Feature Reordering<br/>Match training order"]
+    D --> E["Standard Scaling<br/>5 numerical features"]
+    E --> F["Model-Ready<br/>9 features"]
+
+    style A fill:#EF5350,color:#fff
+    style B fill:#FFB74D,color:#000
+    style C fill:#FFF176,color:#000
+    style D fill:#81C784,color:#000
+    style E fill:#4DB6AC,color:#fff
+    style F fill:#42A5F5,color:#fff
+```
+
+### Engineered Features
+
+| Feature | Formula | Purpose |
+|---------|---------|---------|
+| `Income_per_Dependent` | `Income / (Children + 1)` | Captures financial burden |
+| `Age_Income_Ratio` | `Income / Age` | Captures career progression |
+
+---
+
+## 🧪 Testing
+
+```bash
+# Run all tests
+python -m pytest tests/ -v
+
+# Run specific test suites
+python -m pytest tests/test_preprocessing.py -v    # 12 tests
+python -m pytest tests/test_api.py -v              # 8 tests
+```
+
+**Test Coverage:**
+- ✅ Feature engineering (income ratios, age ratios)
+- ✅ Categorical encoding (ordinal, binary)
+- ✅ Feature reordering & validation
+- ✅ API health endpoint
+- ✅ API root endpoint  
+- ✅ Input validation (missing fields, invalid values, edge cases)
+
+---
+
+## 🐳 Docker Deployment
+
+### Using Docker Compose (Recommended)
+
+```bash
+# Build and start both services
+docker-compose up --build
+
+# Services:
+# API:       http://localhost:8000
+# Dashboard: http://localhost:8501
+```
+
+### Using Docker Directly
+
+```bash
+# Build
+docker build -t credit-scoring-api .
+
+# Run API
+docker run -p 8000:8000 credit-scoring-api
+
+# Run Dashboard
+docker run -p 8501:8501 credit-scoring-api \
+  streamlit run dashboard/app.py --server.port 8501 --server.address 0.0.0.0
+```
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| **ML Framework** | scikit-learn, imbalanced-learn |
+| **API** | FastAPI, Uvicorn, Pydantic |
+| **Dashboard** | Streamlit, Plotly |
+| **Logging** | Loguru |
+| **Serialization** | Joblib |
+| **Testing** | Pytest |
+| **Containerization** | Docker, Docker Compose |
+| **Training** | Google Colab |
+
+---
+
+<p align="center">
+  Built with ❤️ as a Production-Grade Data Science Portfolio Project
+</p>
