@@ -1,8 +1,8 @@
-# 🏗️ DEVELOPMENT PLAN — Credit Scoring System
+#  DEVELOPMENT PLAN — Credit Scoring System
 > **Role:** Senior ML Solutions Architect  
 > **Workflow:** Hybrid (Colab Training ↔ Local Engineering)  
 > **Last Updated:** 2026-04-22  
-> **Status:** ✅ ALL PHASES COMPLETE
+> **Status:**  Phase 2 — Modular Refactoring (COMPLETE)
 
 ---
 
@@ -23,23 +23,23 @@
 
 | Aspect | Current State | Severity |
 |---|---|---|
-| **Project Structure** | Flat — single script (`codealphp1.py`) + CSV + README | 🔴 Critical |
-| **Data Path** | Hardcoded absolute Windows path (`C:\Users\admin\...`) | 🔴 Critical |
-| **Data Format** | Code reads `.xlsx` but repo has `.csv` — mismatch | 🔴 Critical |
-| **Preprocessing** | All logic monolithically embedded in one script | 🟡 Major |
-| **Label Encoding** | Uses single `LabelEncoder` instance across all categorical columns — leaks class mappings | 🔴 Critical |
-| **Model Persistence** | No `joblib`/`pickle` export — model not saved | 🔴 Critical |
-| **Scaler Persistence** | `StandardScaler` not saved — can't reproduce inference-time transforms | 🔴 Critical |
-| **Feature Engineering** | Zero — raw features used directly | 🟡 Major |
-| **API Layer** | None | 🔴 Critical |
-| **UI/Dashboard** | None | 🔴 Critical |
-| **Docker** | None | 🟡 Major |
-| **Logging** | None — uses `print()` | 🟡 Major |
-| **Config Management** | None — hardcoded values | 🟡 Major |
-| **Tests** | None | 🟡 Major |
-| **README Quality** | Generic — no diagrams, no install instructions, no API docs | 🟡 Major |
-| **`.gitignore`** | Missing | 🟡 Major |
-| **`requirements.txt`** | Missing | 🔴 Critical |
+| **Project Structure** | Flat — single script (`codealphp1.py`) + CSV + README |  Critical |
+| **Data Path** | Hardcoded absolute Windows path (`C:\Users\admin\...`) |  Critical |
+| **Data Format** | Code reads `.xlsx` but repo has `.csv` — mismatch |  Critical |
+| **Preprocessing** | All logic monolithically embedded in one script |  Major |
+| **Label Encoding** | Uses single `LabelEncoder` instance across all categorical columns — leaks class mappings |  Critical |
+| **Model Persistence** | No `joblib`/`pickle` export — model not saved |  Critical |
+| **Scaler Persistence** | `StandardScaler` not saved — can't reproduce inference-time transforms |  Critical |
+| **Feature Engineering** | Zero — raw features used directly |  Major |
+| **API Layer** | None |  Critical |
+| **UI/Dashboard** | None | Critical |
+| **Docker** | None |  Major |
+| **Logging** | None — uses `print()` |  Major |
+| **Config Management** | None — hardcoded values | Major |
+| **Tests** | None |  Major |
+| **README Quality** | Generic — no diagrams, no install instructions, no API docs |  Major |
+| **`.gitignore`** | Missing |  Major |
+| **`requirements.txt`** | Missing |  Critical |
 
 ### Critical Bugs Found
 1. **LabelEncoder Misuse:** A single `LabelEncoder` instance is `fit_transform`'d on each categorical column sequentially. This means the encoder retains only the mapping of the *last* column processed. At inference time, all columns would decode incorrectly.
@@ -210,24 +210,24 @@ Credit-Scoring-Model/
 
 ```mermaid
 graph TB
-    subgraph "☁️ Google Colab (Your Domain)"
-        A["📊 Kaggle Dataset"] --> B["🔬 Feature Engineering"]
-        B --> C["🏋️ Model Training<br/>(RandomForest / XGBoost)"]
-        C --> D["📦 Export Artifacts<br/>model.pkl + scaler.pkl<br/>+ encoder.pkl + config.json"]
+    subgraph " Google Colab (Your Domain)"
+        A["Kaggle Dataset"] --> B[" Feature Engineering"]
+        B --> C[" Model Training<br/>(RandomForest / XGBoost)"]
+        C --> D[" Export Artifacts<br/>model.pkl + scaler.pkl<br/>+ encoder.pkl + config.json"]
     end
 
-    subgraph "💻 Local Machine (Antigravity)"
-        D --> |"Manual Transfer"| E["📂 models/ folder"]
-        E --> F["⚙️ src/predict.py<br/>Inference Engine"]
+    subgraph " Local Machine (Antigravity)"
+        D --> |"Manual Transfer"| E[" models/ folder"]
+        E --> F[" src/predict.py<br/>Inference Engine"]
 
-        F --> G["🚀 FastAPI<br/>api/main.py"]
-        G --> |"/predict"| H["📨 JSON Response<br/>{score, probability, risk}"]
+        F --> G[" FastAPI<br/>api/main.py"]
+        G --> |"/predict"| H[" JSON Response<br/>{score, probability, risk}"]
 
-        F --> I["📊 Streamlit Dashboard<br/>dashboard/app.py"]
-        I --> J["🎯 Gauge Chart<br/>+ Input Forms"]
+        F --> I[" Streamlit Dashboard<br/>dashboard/app.py"]
+        I --> J[" Gauge Chart<br/>+ Input Forms"]
     end
 
-    subgraph "🐳 Docker (Deployment)"
+    subgraph " Docker (Deployment)"
         G --> K["Dockerfile"]
         I --> K
     end
@@ -270,7 +270,7 @@ sequenceDiagram
 - [x] List missing industry-standard components
 - [x] Create `DEVELOPMENT_PLAN.md`
 
-### Phase 2: Modular Refactoring ✅
+### Phase 2: Modular Refactoring 
 - [x] Create target directory structure (`src/`, `api/`, `models/`, `dashboard/`, `data/`, `tests/`)
 - [x] Create `.gitignore` (Python, IDE, data files)
 - [x] Write `src/config.py` — central configuration
@@ -286,35 +286,35 @@ sequenceDiagram
 - [x] Write `tests/test_preprocessing.py` — unit tests for preprocessing
 - [x] Write `tests/test_api.py` — unit tests for API endpoints
 
-### Phase 3: The Retraining Bridge ✅
-- [x] Colab training script provided (`notebooks/colab_training.py`)
-- [x] Feature engineering matching `src/preprocessing.py`
-- [x] SMOTE for class balancing
-- [x] Hyperparameter tuning (GridSearchCV)
-- [x] Export: `credit_model.pkl`, `scaler.pkl`, `target_encoder.pkl`, `feature_config.json`
-- [x] User trained on Colab → GradientBoosting (F1: 1.0)
-- [x] Artifacts placed in `models/`
+### Phase 3: The Retraining Bridge ← **CURRENT**
+- [ ] Provide complete Colab training script with:
+  - Proper feature engineering matching `src/preprocessing.py`
+  - SMOTE for class balancing
+  - Hyperparameter tuning (GridSearchCV / Optuna)
+  - Export: `credit_model.pkl`, `scaler.pkl`, `target_encoder.pkl`, `feature_config.json`
+- [ ] User trains on Colab and uploads `.pkl` files to `models/`
 
-### Phase 4: API & UI Development ✅
-- [x] `api/schemas.py` — Pydantic request/response models with enums
-- [x] `api/routes.py` — `/predict` and `/health` endpoints
-- [x] `api/main.py` — FastAPI application with CORS & docs
-- [x] `dashboard/app.py` — Streamlit UI with Vivid Teal & Mint Green theme
-- [x] Gauge chart (Plotly) for credit score visualization
-- [x] Probability breakdown bar chart
-- [x] Risk assessment badges
-- [x] All 20 tests passing (12 preprocessing + 8 API)
+### Phase 4: API & UI Development
+- [ ] Write `api/schemas.py` — Pydantic request/response models
+- [ ] Write `api/routes.py` — `/predict` and `/health` endpoints
+- [ ] Write `api/main.py` — FastAPI application with CORS & docs
+- [ ] Write `dashboard/app.py` — Streamlit UI with:
+  - Vivid Teal & Mint Green theme
+  - Input form for all features
+  - Gauge chart (using Plotly) for credit score visualization
+  - Probability breakdown bar chart
+  - Risk assessment summary
 
-### Phase 5: Finalization & Documentation ✅
-- [x] `requirements.txt` created
-- [x] `Dockerfile` created (Python 3.12-slim, health check)
-- [x] `docker-compose.yml` created (API + Dashboard services)
-- [x] Professional `README.md` with:
-  - Mermaid.js architecture diagrams (system, request flow, preprocessing)
-  - Full API documentation with example JSON
-  - Installation, usage, testing, Docker deployment instructions
-  - Tech stack table & model details
-- [x] All tests verified passing
+### Phase 5: Finalization & Documentation
+- [ ] Create `requirements.txt`
+- [ ] Create `Dockerfile` + `docker-compose.yml`
+- [ ] Write professional `README.md` with:
+  - Project overview & motivation
+  - Mermaid.js architecture diagrams
+  - Installation & usage instructions
+  - API documentation
+  - Screenshots of dashboard
+- [ ] Final testing & verification
 
 ---
 
@@ -336,18 +336,3 @@ sequenceDiagram
 Colab → Google Drive → Download → Place in models/ folder → Restart API
 ```
 
----
-
-## 7. Progress Tracker
-
-| Phase | Status | Started | Completed |
-|---|---|---|---|
-| Phase 1: Initialization & Context | ✅ Complete | 2026-04-22 | 2026-04-22 |
-| Phase 2: Modular Refactoring | ✅ Complete | 2026-04-22 | 2026-04-22 |
-| Phase 3: Retraining Bridge | ✅ Complete | 2026-04-22 | 2026-04-27 |
-| Phase 4: API & UI Development | ✅ Complete | 2026-04-22 | 2026-04-27 |
-| Phase 5: Finalization & Documentation | ✅ Complete | 2026-04-27 | 2026-04-27 |
-
----
-
-> 🎉 **PROJECT COMPLETE** — All 5 phases delivered. 20/20 tests passing. Ready for deployment.
