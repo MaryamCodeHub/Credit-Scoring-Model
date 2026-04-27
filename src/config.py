@@ -46,7 +46,7 @@ TARGET_COLUMN = "Credit Score"
 
 # Ordinal mapping for Education (preserves natural hierarchy)
 EDUCATION_ORDER = {
-    "High School Diploma": 1,
+    "Intermediate": 1,
     "Associate's Degree": 2,
     "Bachelor's Degree": 3,
     "Master's Degree": 4,
@@ -62,7 +62,7 @@ HOME_OWNERSHIP_MAP = {"Rented": 0, "Owned": 1}
 NUMERICAL_FEATURES = [
     "Age",
     "Income",
-    "Number of Children",
+    "Number_of_Children",
     "Income_per_Dependent",
     "Age_Income_Ratio",
 ]

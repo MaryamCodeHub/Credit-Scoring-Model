@@ -20,7 +20,7 @@ class GenderEnum(str, Enum):
 
 
 class EducationEnum(str, Enum):
-    HIGH_SCHOOL = "High School Diploma"
+    INTERMEDIATE = "Intermediate"
     ASSOCIATES = "Associate's Degree"
     BACHELORS = "Bachelor's Degree"
     MASTERS = "Master's Degree"
