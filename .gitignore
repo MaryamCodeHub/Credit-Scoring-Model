@@ -50,6 +50,8 @@ models/*.joblib
 # ========================
 data/*.xlsx
 data/*.xls
+data/raw/kaggle_credit_score/train.csv
+data/raw/kaggle_credit_score/test.csv
 # Keep the CSV for demo purposes
 # data/*.csv
 
