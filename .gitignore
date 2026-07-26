@@ -80,6 +80,7 @@ docker-compose.override.yml
 *.ipynb
 !notebooks/03_baseline_model_training_colab.ipynb
 !notebooks/04_controlled_model_tuning_colab.ipynb
+!notebooks/05_frozen_decision_tree_final_evaluation_colab.ipynb
 
 # ========================
 # Misc
