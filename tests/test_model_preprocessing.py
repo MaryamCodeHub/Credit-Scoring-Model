@@ -15,6 +15,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from src.model_preprocessing import (  # noqa: E402
     CATEGORICAL_FEATURES,
     FORBIDDEN_COLUMNS,
+    INPUT_NUMERICAL_FEATURES,
     MODEL_FEATURES,
     NUMERICAL_FEATURES,
     QUARANTINED_COLUMNS,
@@ -27,9 +28,10 @@ def _cleaned_frame() -> pd.DataFrame:
     rows = 4
     data: dict[str, object] = {
         column: np.arange(1, rows + 1, dtype=float)
-        for column in NUMERICAL_FEATURES
+        for column in INPUT_NUMERICAL_FEATURES
     }
     data["Age"] = [20.0, 30.0, np.nan, 40.0]
+    data["Num_Bank_Accounts"] = [1.0, 2.0, 99.0, 3.0]
     data["Occupation"] = ["Engineer", np.nan, "Teacher", "Engineer"]
     data["Credit_Score"] = ["Good", "Standard", "Poor", "Good"]
     data["Customer_ID"] = ["CUS_1", "CUS_2", "CUS_3", "CUS_4"]
@@ -47,7 +49,14 @@ def _fitted():
     return build_model_preprocessor().fit(inputs.X), inputs
 
 
-def _state(preprocessor) -> tuple[np.ndarray, tuple[tuple[object, ...], ...]]:
+def _state(
+    preprocessor,
+) -> tuple[
+    tuple[tuple[str, float], ...],
+    np.ndarray,
+    tuple[tuple[object, ...], ...],
+]:
+    thresholds = tuple(preprocessor.extreme_value_transformer_.thresholds_.items())
     numeric = preprocessor.column_transformer_.named_transformers_[
         "numerical"
     ].named_steps["imputer"].statistics_.copy()
@@ -57,7 +66,7 @@ def _state(preprocessor) -> tuple[np.ndarray, tuple[tuple[object, ...], ...]]:
             "occupation"
         ].named_steps["encoder"].categories_
     )
-    return numeric, categories
+    return thresholds, numeric, categories
 
 
 def test_feature_contract_excludes_forbidden_and_quarantined_columns() -> None:
@@ -100,8 +109,9 @@ def test_numerical_imputation_is_learned_only_from_development() -> None:
     age_index = list(preprocessor.get_feature_names_out()).index("Age")
 
     assert transformed[0, age_index] == pytest.approx(30.0)
-    np.testing.assert_array_equal(state_after[0], state_before[0])
-    assert state_after[1] == state_before[1]
+    assert state_after[0] == state_before[0]
+    np.testing.assert_array_equal(state_after[1], state_before[1])
+    assert state_after[2] == state_before[2]
 
 
 def test_missing_occupation_is_encoded_as_unknown() -> None:
@@ -137,8 +147,9 @@ def test_validation_transform_does_not_refit() -> None:
     preprocessor.transform(validation)
 
     state_after = _state(preprocessor)
-    np.testing.assert_array_equal(state_after[0], state_before[0])
-    assert state_after[1] == state_before[1]
+    assert state_after[0] == state_before[0]
+    np.testing.assert_array_equal(state_after[1], state_before[1])
+    assert state_after[2] == state_before[2]
 
 
 def test_final_test_transform_does_not_refit() -> None:
@@ -150,8 +161,9 @@ def test_final_test_transform_does_not_refit() -> None:
     preprocessor.transform(final_test)
 
     state_after = _state(preprocessor)
-    np.testing.assert_array_equal(state_after[0], state_before[0])
-    assert state_after[1] == state_before[1]
+    assert state_after[0] == state_before[0]
+    np.testing.assert_array_equal(state_after[1], state_before[1])
+    assert state_after[2] == state_before[2]
 
 
 def test_feature_names_are_stable_and_available() -> None:
@@ -165,14 +177,34 @@ def test_feature_names_are_stable_and_available() -> None:
     assert set(CATEGORICAL_FEATURES).isdisjoint(first.get_feature_names_out())
 
 
+def test_extreme_values_are_median_imputed_and_indicators_enter_matrix() -> None:
+    preprocessor, inputs = _fitted()
+    transformed = preprocessor.transform(inputs.X)
+    names = list(preprocessor.get_feature_names_out())
+    value_index = names.index("Num_Bank_Accounts")
+    indicator_index = names.index("Num_Bank_Accounts_Extreme_Invalid")
+
+    assert transformed[2, value_index] == pytest.approx(2.0)
+    assert transformed[2, indicator_index] == pytest.approx(1.0)
+
+
+def test_forbidden_columns_remain_absent_after_extreme_value_integration() -> None:
+    preprocessor, _ = _fitted()
+    names = set(preprocessor.get_feature_names_out())
+
+    assert not names.intersection(FORBIDDEN_COLUMNS)
+    assert not names.intersection(QUARANTINED_COLUMNS)
+
+
 def test_repeated_fits_are_deterministic() -> None:
     inputs = separate_features_target_groups(_cleaned_frame())
     first = build_model_preprocessor().fit(inputs.X)
     second = build_model_preprocessor().fit(inputs.X)
 
     np.testing.assert_array_equal(first.transform(inputs.X), second.transform(inputs.X))
-    np.testing.assert_array_equal(_state(first)[0], _state(second)[0])
-    assert _state(first)[1] == _state(second)[1]
+    assert _state(first)[0] == _state(second)[0]
+    np.testing.assert_array_equal(_state(first)[1], _state(second)[1])
+    assert _state(first)[2] == _state(second)[2]
 
 
 def test_inputs_are_not_mutated() -> None:

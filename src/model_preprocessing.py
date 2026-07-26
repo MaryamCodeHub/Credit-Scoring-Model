@@ -19,6 +19,11 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.utils.validation import check_is_fitted
 
+from src.extreme_values import (
+    EXTREME_INDICATOR_COLUMNS,
+    ExtremeValueTransformer,
+)
+
 
 TARGET_COLUMN: Final = "Credit_Score"
 GROUP_COLUMN: Final = "Customer_ID"
@@ -43,7 +48,7 @@ QUARANTINED_COLUMNS: Final = (
     "Type_of_Loan",
 )
 
-NUMERICAL_FEATURES: Final = (
+INPUT_NUMERICAL_FEATURES: Final = (
     "Age",
     "Annual_Income",
     "Monthly_Inhand_Salary",
@@ -59,8 +64,12 @@ NUMERICAL_FEATURES: Final = (
     "Total_EMI_per_month",
 )
 
+NUMERICAL_FEATURES: Final = (
+    INPUT_NUMERICAL_FEATURES + EXTREME_INDICATOR_COLUMNS
+)
 CATEGORICAL_FEATURES: Final = ("Occupation",)
-MODEL_FEATURES: Final = NUMERICAL_FEATURES + CATEGORICAL_FEATURES
+MODEL_INPUT_FEATURES: Final = INPUT_NUMERICAL_FEATURES + CATEGORICAL_FEATURES
+MODEL_FEATURES: Final = MODEL_INPUT_FEATURES
 
 
 @dataclass(frozen=True)
@@ -91,13 +100,13 @@ def separate_features_target_groups(frame: pd.DataFrame) -> ModelInputs:
     if frame.columns.has_duplicates:
         raise ValueError("Input DataFrame contains duplicate column names.")
 
-    required = MODEL_FEATURES + (TARGET_COLUMN, GROUP_COLUMN)
+    required = MODEL_INPUT_FEATURES + (TARGET_COLUMN, GROUP_COLUMN)
     missing = _missing_columns(frame, required)
     if missing:
         raise ValueError(f"Missing required columns: {', '.join(missing)}")
 
     return ModelInputs(
-        X=frame.loc[:, MODEL_FEATURES].copy(deep=True),
+        X=frame.loc[:, MODEL_INPUT_FEATURES].copy(deep=True),
         y=frame.loc[:, TARGET_COLUMN].copy(deep=True),
         groups=frame.loc[:, GROUP_COLUMN].copy(deep=True),
     )
@@ -125,15 +134,15 @@ def _validated_feature_copy(frame: pd.DataFrame, *, operation: str) -> pd.DataFr
             f"{', '.join(present_quarantined)}"
         )
 
-    missing = _missing_columns(frame, MODEL_FEATURES)
+    missing = _missing_columns(frame, MODEL_INPUT_FEATURES)
     if missing:
         raise ValueError(f"Missing required model feature columns: {', '.join(missing)}")
 
-    unexpected = sorted(set(frame.columns).difference(MODEL_FEATURES))
+    unexpected = sorted(set(frame.columns).difference(MODEL_INPUT_FEATURES))
     if unexpected:
         raise ValueError(f"Unexpected model feature columns: {', '.join(unexpected)}")
 
-    result = frame.loc[:, MODEL_FEATURES].copy(deep=True)
+    result = frame.loc[:, MODEL_INPUT_FEATURES].copy(deep=True)
     for column in CATEGORICAL_FEATURES:
         result[column] = result[column].astype(object).where(result[column].notna(), np.nan)
     return result
@@ -166,6 +175,15 @@ def _make_column_transformer() -> ColumnTransformer:
     )
 
 
+def _make_preprocessing_pipeline() -> Pipeline:
+    return Pipeline(
+        steps=[
+            ("extreme_values", ExtremeValueTransformer()),
+            ("columns", _make_column_transformer()),
+        ]
+    )
+
+
 class CreditModelPreprocessor(TransformerMixin, BaseEstimator):
     """Fit development-only imputers and encoding for the approved features."""
 
@@ -173,28 +191,32 @@ class CreditModelPreprocessor(TransformerMixin, BaseEstimator):
         """Fit learned preprocessing state; ``y`` is accepted but never used."""
 
         validated = _validated_feature_copy(X, operation="fit")
-        self.column_transformer_ = _make_column_transformer()
-        self.column_transformer_.fit(validated)
-        self.feature_names_in_ = np.asarray(MODEL_FEATURES, dtype=object)
-        self.n_features_in_ = len(MODEL_FEATURES)
+        self.pipeline_ = _make_preprocessing_pipeline()
+        self.pipeline_.fit(validated)
+        self.extreme_value_transformer_ = self.pipeline_.named_steps[
+            "extreme_values"
+        ]
+        self.column_transformer_ = self.pipeline_.named_steps["columns"]
+        self.feature_names_in_ = np.asarray(MODEL_INPUT_FEATURES, dtype=object)
+        self.n_features_in_ = len(MODEL_INPUT_FEATURES)
         return self
 
     def transform(self, X: pd.DataFrame) -> np.ndarray:
         """Transform data using already-fitted development statistics."""
 
-        check_is_fitted(self, "column_transformer_")
+        check_is_fitted(self, "pipeline_")
         validated = _validated_feature_copy(X, operation="transform")
-        return np.asarray(self.column_transformer_.transform(validated))
+        return np.asarray(self.pipeline_.transform(validated))
 
     def get_feature_names_out(
         self, input_features: object = None
     ) -> np.ndarray:
         """Return stable output names after the preprocessor has been fitted."""
 
-        check_is_fitted(self, "column_transformer_")
+        check_is_fitted(self, "pipeline_")
         if input_features is not None:
             supplied = tuple(input_features)
-            if supplied != MODEL_FEATURES:
+            if supplied != MODEL_INPUT_FEATURES:
                 raise ValueError("input_features must match the approved feature contract.")
         return self.column_transformer_.get_feature_names_out()
 
