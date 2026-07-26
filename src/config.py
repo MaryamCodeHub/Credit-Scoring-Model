@@ -27,6 +27,9 @@ MODEL_PATH = MODELS_DIR / "credit_model.pkl"
 SCALER_PATH = MODELS_DIR / "scaler.pkl"
 TARGET_ENCODER_PATH = MODELS_DIR / "target_encoder.pkl"
 FEATURE_CONFIG_PATH = MODELS_DIR / "feature_config.json"
+MODEL_V2_DIR = MODELS_DIR / "v2"
+MODEL_V2_PATH = MODEL_V2_DIR / "credit_score_decision_tree_pipeline.joblib"
+MODEL_V2_METADATA_PATH = MODEL_V2_DIR / "model_metadata.json"
 
 # ──────────────────────────────────────────────
 # Feature Definitions
