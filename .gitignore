@@ -79,6 +79,7 @@ docker-compose.override.yml
 .ipynb_checkpoints/
 *.ipynb
 !notebooks/03_baseline_model_training_colab.ipynb
+!notebooks/04_controlled_model_tuning_colab.ipynb
 
 # ========================
 # Misc
