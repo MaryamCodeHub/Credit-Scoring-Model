@@ -1,0 +1,93 @@
+{
+  "model_version": "2.0.0",
+  "created_at_utc": "2026-07-26T16:19:58.244241+00:00",
+  "repository_branch": "model-improvement-v2",
+  "repository_commit": "4a6a63d7f8bd5cc01760829e27c4fd796d40b7ef",
+  "training_dataset_sha256": "D2EBCC056A64C48710B1AEB96777155835D372D7AD202529F64666011D214DA0",
+  "model_type": "DecisionTreeClassifier",
+  "model_parameters": {
+    "max_depth": 6,
+    "min_samples_leaf": 100,
+    "class_weight": null,
+    "random_state": 42
+  },
+  "target_classes": [
+    "Poor",
+    "Standard",
+    "Good"
+  ],
+  "raw_model_features": [
+    "Age",
+    "Annual_Income",
+    "Monthly_Inhand_Salary",
+    "Num_Bank_Accounts",
+    "Num_Credit_Card",
+    "Num_of_Loan",
+    "Num_of_Delayed_Payment",
+    "Changed_Credit_Limit",
+    "Num_Credit_Inquiries",
+    "Outstanding_Debt",
+    "Credit_Utilization_Ratio",
+    "Credit_History_Age_Months",
+    "Total_EMI_per_month",
+    "Occupation"
+  ],
+  "transformed_feature_count": 35,
+  "requires_clean_credit_data_before_prediction": true,
+  "final_test_evaluated_once": true,
+  "final_test_metrics": {
+    "macro_f1": 0.6288978543688063,
+    "accuracy": 0.6742021276595744,
+    "balanced_accuracy": 0.6149644095649512,
+    "weighted_f1": 0.668884703500439,
+    "macro_precision": 0.6533535037681631,
+    "macro_recall": 0.6149644095649512,
+    "poor_recall": 0.5757722007722008,
+    "validation_to_final_absolute_difference": 0.009063854368806301,
+    "per_class": {
+      "Poor": {
+        "precision": 0.7359654534238125,
+        "recall": 0.5757722007722008,
+        "f1": 0.6460871919848362,
+        "support": 4144
+      },
+      "Standard": {
+        "precision": 0.68625,
+        "recall": 0.7950236966824644,
+        "f1": 0.736643083678946,
+        "support": 7596
+      },
+      "Good": {
+        "precision": 0.5378450578806767,
+        "recall": 0.4740973312401884,
+        "f1": 0.5039632874426366,
+        "support": 2548
+      }
+    },
+    "confusion_matrix": [
+      [
+        2386,
+        1445,
+        313
+      ],
+      [
+        832,
+        6039,
+        725
+      ],
+      [
+        24,
+        1316,
+        1208
+      ]
+    ]
+  },
+  "portfolio_acceptance": true,
+  "limitations": [
+    "Educational portfolio model only.",
+    "Not validated for real lending or regulatory use.",
+    "Final-test results must not be used for further tuning.",
+    "Raw inputs require deterministic cleaning before prediction."
+  ],
+  "model_artifact_sha256": "891f91169697c8d5766a7d30c22b39704ee7efd18f771cb5d4e8600672696b3e"
+}
